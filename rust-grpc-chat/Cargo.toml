@@ -1,0 +1,36 @@
+[package]
+name = "rust-grpc-chat"
+version = "0.1.0"
+authors = ["Abbas Dharamsey <adharams@ucsd.edu>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tonic = "0.4"
+prost = "0.7"
+prost-types = "0.7"
+futures-core = "0.3"
+futures-util = "0.3"
+tokio = { version = "1.0", features = ["rt-multi-thread", "macros", "sync", "time", "io-std", "io-util"] }
+tokio-util = { version = "0.6.6", features = ["codec"]}
+tokio-stream = { version = "0.1", features = ["sync"] }
+futures = { version = "0.3", default-features = false, features = ["alloc"] }
+async-stream = "0.2"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+rand = "0.7"
+uuid = { version = "0.8", features = ["serde", "v4"] }
+dashmap = "4.0.2"
+async-trait = "0.1.50"
+
+[build-dependencies]
+tonic-build = "0.4"
+
+[[bin]]
+name = "chat-server"
+path = "src/server.rs"
+
+[[bin]]
+name = "chat-client"
+path = "src/client.rs"

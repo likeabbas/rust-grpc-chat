@@ -1,0 +1,4 @@
+"imports_layout" = "HorizontalVertical"
+"enum_discrim_align_threshold" = 20
+"struct_field_align_threshold" = 20
+"chain_width" = 10
