@@ -5,6 +5,9 @@ package chat;
 import "google/protobuf/timestamp.proto";
 
 option go_package="github.com/rodaine/grpc-chat/protos";
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.routeguide";
+option java_outer_classname = "ChatProto";
 
 service Chat {
   rpc Login(LoginRequest) returns (LoginResponse) {}
@@ -12,13 +15,20 @@ service Chat {
   rpc Stream(stream StreamRequest) returns (stream StreamResponse) {}
 }
 
+// Todo
+// If password is there & username exist in database, check if password matches salt and if it does, then authenticate the user
+// if password is there & username doesn't exist in database, send back an "Account Created" something.
+// else if username exist in database and password don't match, send back unauthenticated
+// else if username doesn't exist in database & username doesn't exist in current chat members & password not there, auth user for just this session
 message LoginRequest {
-  string password = 1;
-  string name     = 2;
+  string username = 1;
+  string user_password = 2;
+  string server_password = 3;
 }
 
 message LoginResponse {
   string token = 1;
+  repeated ReceiverMessage recent_messages = 2;
 }
 
 message LogoutRequest {
@@ -27,31 +37,45 @@ message LogoutRequest {
 
 message LogoutResponse {}
 
+message SenderMessage {
+  string content = 1;
+}
+
+message ReceiverMessage {
+  string username = 1;
+  string content  = 2;
+  google.protobuf.Timestamp timestamp = 3;
+}
+
 message StreamRequest {
-  string message = 2;
+  oneof event {
+    SenderMessage send_message = 1;
+    End  end_chat     = 2;
+  }
+
+  message Send {
+    string content = 1;
+  }
+
+  message End {
+    string token = 1;
+  }
 }
 
 message StreamResponse {
-  google.protobuf.Timestamp timestamp = 1;
-
   oneof event {
     Login    client_login    = 2;
     Logout   client_logout   = 3;
-    Message  client_message  = 4;
+    ReceiverMessage  client_message  = 4;
     Shutdown server_shutdown = 5;
   }
 
   message Login {
-    string name = 1;
+    string username = 1;
   }
 
   message Logout {
-    string name = 1;
-  }
-
-  message Message {
-    string name    = 1;
-    string message = 2;
+    string username = 1;
   }
 
   message Shutdown {}
