@@ -285,7 +285,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 
 
-
+    // ChatServer::with_interceptor();
     let svc = ChatServer::new(service);
     Server::builder().add_service(svc).serve(addr).await?;
     Ok(())
@@ -297,3 +297,5 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // };
     // rt.block_on(cap);
 }
+
+

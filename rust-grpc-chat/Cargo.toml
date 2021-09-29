@@ -7,9 +7,9 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tonic = "0.4.3"
-prost = "0.7"
-prost-types = "0.7"
+tonic = "0.5.2"
+prost = "0.8.0"
+prost-types = "0.8.0"
 futures-core = "0.3"
 futures-util = "0.3"
 tokio = { version = "1.0", features = ["rt-multi-thread", "macros", "sync", "time", "io-std", "io-util", "tracing"] }
@@ -19,13 +19,13 @@ futures = { version = "0.3", default-features = false, features = ["alloc"] }
 async-stream = "0.3.1"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-rand = "0.7"
+rand = "0.8.4"
 uuid = { version = "0.8", features = ["serde", "v4"] }
 dashmap = "4.0.2"
 async-trait = "0.1.50"
 ringbuf = "0.2.4"
 chrono = "0.4.19"
-tui = "0.14"
+tui = "0.16.0"
 termion = "1.5"
 arraydeque = "0.4.5"
 #console-api = { path = "../console-api", features = ["transport"]}
@@ -37,7 +37,7 @@ tracing-subscriber = { version = "0.2.17", default-features = false, features = 
 rustflags = ["--cfg", "tokio_unstable"]
 
 [build-dependencies]
-tonic-build = "0.4.2"
+tonic-build = "0.5.2"
 
 [[bin]]
 name = "chat-server"
