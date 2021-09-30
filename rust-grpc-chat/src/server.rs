@@ -3,7 +3,7 @@ pub mod chat {
 }
 
 use chat::chat_server::{Chat, ChatServer};
-use chat::{LoginRequest, LoginResponse, LogoutRequest, LogoutResponse, StreamRequest, StreamResponse, stream_response, stream_request, SenderMessage, ReceiverMessage};
+use chat::{LoginRequest, LoginResponse, LogoutRequest, LogoutResponse, StreamRequest, StreamResponse, stream_response, stream_request, SenderMessage, ReceiverMessage, SendChatRequest, ServerResponse, UserLoginRequest, server_response};
 
 use std::pin::Pin;
 use std::sync::{Arc};
@@ -43,6 +43,13 @@ pub struct TokenData {
     expiration: DateTime<Utc>,
 }
 
+
+#[derive(Debug, Clone)]
+pub struct UserData {
+    token: String,
+    expiration: DateTime<Utc>,
+}
+
 #[derive(Debug, Clone)]
 pub struct ChatService {
     username_to_user_password: Arc<DashMap<String,String>>,
@@ -51,6 +58,9 @@ pub struct ChatService {
     arr: Arc<RwLock<ArrayDeque<[ReceiverMessage; 10]> >>,
     server_password: &'static str,
     tx: Sender<Result<StreamResponse,Status>>,
+    // New Data
+    username_to_data: Arc<DashMap<String, RwLock<UserData>>>,
+    last_messages: RwLock<ArrayDeque<[ServerResponse]>>,
 }
 
 #[async_trait]
@@ -197,6 +207,31 @@ impl<'a> Chat for ChatService {
 
         let ret: Self::StreamStream = Box::pin(rx);
         Ok(Response::new(ret))
+    }
+
+    type UserLoginStream =
+        Pin<Box<dyn Stream<Item = Result<ServerResponse, Status>> + Send + Sync + 'static>>;
+
+    async fn user_login(&self, request: Request<UserLoginRequest>) -> Result<Response<Self::UserLoginStream>, Status> {
+        let username = request.into_inner().username;
+
+        if self.username_to_data.contains_key(&*username) {
+            return Err(Status::new(Code::Unavailable, "name is already taken"))
+        }
+
+        let user_data = UserData {
+            token: Uuid::new_v4().to_string(),
+
+        };
+        todo!()
+    }
+
+    async fn user_logout(&self, request: Request<chat_client::chat::UserLogoutRequest>) -> Result<Response<()>, Status> {
+        todo!()
+    }
+
+    async fn send_chat(&self, request: Request<chat_client::chat::SendChatRequest>) -> Result<Response<()>, Status> {
+        todo!()
     }
 }
 

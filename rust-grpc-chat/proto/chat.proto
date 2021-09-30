@@ -3,6 +3,7 @@ syntax = "proto3";
 package chat;
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
 
 option go_package="github.com/rodaine/grpc-chat/protos";
 option java_multiple_files = true;
@@ -13,6 +14,56 @@ service Chat {
   rpc Login(LoginRequest) returns (LoginResponse) {}
   rpc Logout(LogoutRequest) returns (LogoutResponse) {}
   rpc Stream(stream StreamRequest) returns (stream StreamResponse) {}
+
+  rpc UserLogin(UserLoginRequest) returns (stream ServerResponse) {}
+  rpc UserLogout(UserLogoutRequest) returns (google.protobuf.Empty){}
+  rpc SendChat(SendChatRequest) returns (google.protobuf.Empty) {}
+}
+
+message UserLogoutRequest {
+  string username = 1;
+  string token = 2;
+}
+
+message UserLoginRequest {
+  string username = 1;
+}
+
+message ServerResponse {
+  oneof event {
+    InitialData initial_data = 1;
+    UserChat user_chat = 2;
+    ServiceError service_error = 3;
+  }
+  message InitialData {
+    string token = 1; // will be used for users sending messages. Think of it as a timed ID
+    repeated ReceiverMessage recent_messages = 2; // last N messages of the chat
+  }
+
+  // Message from new person
+  message UserChat {
+    string username = 1; // username of whom chatted
+    string content  = 2; // content of new chat
+    google.protobuf.Timestamp timestamp = 3; // timestamp of message for formatting
+  }
+
+  // ex Username Taken
+  message ServiceError {
+    enum SpecificError {
+      USERNAME_TAKEN = 0;
+      TIME_EXPIRED = 1;
+      CUSTOM_ERROR = 2;
+    };
+    SpecificError specificError = 1;
+    optional string customError = 2; // will only be set if Specific Error is custom
+  }
+}
+
+// Need username to get the object on the server will use token to get the username and send the content to everyone else
+message SendChatRequest {
+  string username = 1;
+  string token = 2;
+  string content = 3;
 }
 
 // Todo
